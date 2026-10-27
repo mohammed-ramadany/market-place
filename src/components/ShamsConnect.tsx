@@ -1,9 +1,10 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useShamsApp } from "@/lib/useShamsApp";
 
 export default function ShamsConnect() {
+  const [menuOpen, setMenuOpen] = useState(false);
   const v = useShamsApp();
   const {
     nav, show, goHome, goDirectory, goOffers, goOpportunities,
@@ -21,10 +22,29 @@ export default function ShamsConnect() {
     eventList, leads, viewers, modList, pendingLabel,
   } = v;
 
-  return (
-<div style={{ display: "flex", flexWrap: "wrap", width: "100%", minHeight: "100vh", background: "#F5F6F8", fontFamily: "'IBM Plex Sans', system-ui, sans-serif", color: "#13212C" }}>
+  const go = (fn: () => void) => () => {
+    fn();
+    setMenuOpen(false);
+  };
 
-<aside aria-label="Main navigation" style={{ flex: "1 1 240px", background: "#0B3341", padding: "22px 14px", display: "flex", flexDirection: "column", gap: "18px" }}>
+  useEffect(() => {
+    document.body.style.overflow = menuOpen ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [menuOpen]);
+
+  return (
+<div className="app-shell">
+
+<button
+  type="button"
+  className={`app-backdrop${menuOpen ? " open" : ""}`}
+  aria-label="Close menu"
+  onClick={() => setMenuOpen(false)}
+/>
+
+<aside className={`app-sidebar${menuOpen ? " open" : ""}`} aria-label="Main navigation">
 <div style={{ display: "flex", alignItems: "center", gap: "12px", padding: "0 8px" }}>
 <div style={{ width: "40px", height: "40px", borderRadius: "11px", background: "#F2B44B", display: "flex", alignItems: "center", justifyContent: "center", flex: "none" }}>
 <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0B3341" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" /></svg>
@@ -36,20 +56,20 @@ export default function ShamsConnect() {
 </div>
 <nav style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
 <div className="nav-label">Network</div>
-<button className={nav.home} onClick={goHome}><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z" /></svg>Home</button>
-<button className={nav.directory} onClick={goDirectory}><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="3" width="16" height="18" rx="2" /><path d="M9 7h1M14 7h1M9 11h1M14 11h1M9 15h1M14 15h1" /></svg>Company directory</button>
-<button className={nav.offers} onClick={goOffers}><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z" /><circle cx="7.5" cy="7.5" r="1.5" /></svg>Member offers</button>
-<button className={nav.opportunities} onClick={goOpportunities}><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="7" width="18" height="13" rx="2" /><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 13h18" /></svg>Opportunities</button>
-<button className={nav.messages} onClick={goMessages}><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z" /></svg>Messages{hasUnread ? (
+<button className={nav.home} onClick={go(goHome)}><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z" /></svg>Home</button>
+<button className={nav.directory} onClick={go(goDirectory)}><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="3" width="16" height="18" rx="2" /><path d="M9 7h1M14 7h1M9 11h1M14 11h1M9 15h1M14 15h1" /></svg>Company directory</button>
+<button className={nav.offers} onClick={go(goOffers)}><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z" /><circle cx="7.5" cy="7.5" r="1.5" /></svg>Member offers</button>
+<button className={nav.opportunities} onClick={go(goOpportunities)}><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="7" width="18" height="13" rx="2" /><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 13h18" /></svg>Opportunities</button>
+<button className={nav.messages} onClick={go(goMessages)}><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z" /></svg>Messages{hasUnread ? (
 <>
 <span className="badge">{unreadCount}</span>
 </>
 ) : null}</button>
-<button className={nav.events} onClick={goEvents}><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="5" width="18" height="16" rx="2" /><path d="M3 10h18M8 3v4M16 3v4" /></svg>Events</button>
+<button className={nav.events} onClick={go(goEvents)}><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="5" width="18" height="16" rx="2" /><path d="M3 10h18M8 3v4M16 3v4" /></svg>Events</button>
 <div className="nav-label">My company</div>
-<button className={nav.dashboard} onClick={goDashboard}><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M4 20V11M10 20V5M16 20v-6M2 20h20" /></svg>Dashboard</button>
+<button className={nav.dashboard} onClick={go(goDashboard)}><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M4 20V11M10 20V5M16 20v-6M2 20h20" /></svg>Dashboard</button>
 <div className="nav-label">Shams staff</div>
-<button className={nav.admin} onClick={goAdmin}><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z" /><path d="m9 12 2 2 4-4" /></svg>Admin console</button>
+<button className={nav.admin} onClick={go(goAdmin)}><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z" /><path d="m9 12 2 2 4-4" /></svg>Admin console</button>
 </nav>
 <div style={{ marginTop: "auto", display: "flex", alignItems: "center", gap: "12px", padding: "12px", borderRadius: "12px", background: "#0F3F4F" }}>
 <div className="av av1" style={{ width: "40px", height: "40px", background: "#F2B44B", color: "#0B3341" }}>ND</div>
@@ -60,20 +80,31 @@ export default function ShamsConnect() {
 </div>
 </aside>
 
-<main style={{ flex: "999 1 560px", minWidth: "0", display: "flex", flexDirection: "column" }}>
-<header style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "12px", padding: "14px 32px", background: "#FFFFFF", borderBottom: "1px solid #E3E7EB" }}>
-<div style={{ position: "relative", flex: "1 1 280px", maxWidth: "520px" }}>
+<main className="app-main">
+<header className="app-header">
+<button
+  type="button"
+  className="icon-btn app-menu-btn"
+  aria-label={menuOpen ? "Close navigation" : "Open navigation"}
+  aria-expanded={menuOpen}
+  onClick={() => setMenuOpen((o) => !o)}
+>
+  <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+    {menuOpen ? <path d="M6 6l12 12M18 6 6 18" /> : <path d="M4 7h16M4 12h16M4 17h16" />}
+  </svg>
+</button>
+<div style={{ position: "relative", flex: "1 1 180px", maxWidth: "520px", minWidth: "0" }}>
 <svg aria-hidden="true" style={{ position: "absolute", left: "14px", top: "12px", color: "#5B6670" }} width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
 <input className="input" style={{ paddingLeft: "42px" }} type="search" aria-label="Search companies and services" placeholder="Search companies, services, activities…" value={s_q} onChange={onTopSearch} />
 </div>
-<div style={{ display: "flex", alignItems: "center", gap: "10px", marginLeft: "auto" }}>
+<div className="app-header-actions" style={{ display: "flex", alignItems: "center", gap: "10px", marginLeft: "auto" }}>
 <span className="tag tag-amber">Prototype · sample data</span>
 <button className="btn btn-ghost" lang="ar" aria-label="Switch to Arabic">عربي</button>
 <button className="icon-btn" aria-label="Notifications, 3 new"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 8-3 8h18s-3-1-3-8" /><path d="M10 20a2 2 0 0 0 4 0" /></svg><span className="dot"></span></button>
 </div>
 </header>
 
-<div style={{ padding: "28px 32px 56px", width: "100%", maxWidth: "1280px" }}>
+<div className="app-content">
 
 {/* HOME */}
 {show.home ? (
@@ -608,8 +639,8 @@ export default function ShamsConnect() {
 <p className="muted" style={{ marginTop: "6px", fontSize: "15px" }}>Direct conversations with other member companies.</p>
 </div>
 </div>
-<div className="card" style={{ display: "flex", flexWrap: "wrap", overflow: "hidden" }}>
-<div style={{ flex: "1 1 280px", borderRight: "1px solid #E3E7EB", display: "flex", flexDirection: "column" }}>
+<div className="card msg-layout">
+<div className="msg-threads">
 <div style={{ padding: "16px" }}><input className="input" type="search" aria-label="Search conversations" placeholder="Search conversations" /></div>
 {threadList.map((t, $index) => (
 <React.Fragment key={$index}>
@@ -630,7 +661,7 @@ export default function ShamsConnect() {
 </React.Fragment>
 ))}
 </div>
-<div style={{ flex: "999 1 400px", minWidth: "0", display: "flex", flexDirection: "column" }}>
+<div className="msg-pane">
 <div style={{ padding: "14px 20px", borderBottom: "1px solid #E3E7EB", display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
 <div className={cur.avCls} style={{ width: "40px", height: "40px", fontSize: "13px" }}>{cur.initials}</div>
 <div style={{ flex: "1", minWidth: "0" }}><strong>{cur.name}</strong><div className="muted small">{cur.activity}</div></div>
